@@ -67,8 +67,10 @@
     <title>Flight Search</title>
     <link rel="stylesheet" href="https://code.cdn.mozilla.net/fonts/fira.css">
     <link rel="stylesheet" type="text/css" href="css/styling.css"/>
+    <link rel="stylesheet" type="text/css" href="css/dark.css"/>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <meta name="viewport" content="width=device-width, initial-scale=0.7">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#282C34">
   </head>
 
   <body class="flight_search">
@@ -78,6 +80,11 @@
         <link rel="icon" href="favicon.ico" />
         <link rel="shortcut icon" href="favicon.ico" />
         <div id="header_text">
+          <select id="select" onchange="changeTheme(this.value)">
+            <option id="dark" value="dark">Dark</option>
+            <option id="light" value="light">Light</option>
+          </select>
+
           <select id="select" onchange="location = this.value;">
             <option value="">Flight Search</option>
             <option value="inspiration_search.php">Inspiration Search</option>
@@ -106,6 +113,33 @@
           </form>
         </div>
       </div>
+
+      <!-- Change theme -->
+      <script type="text/javascript">
+        if (localStorage.getItem('css')) {
+          changeTheme(localStorage.getItem('css'));
+        }
+
+        function changeTheme(css) {
+          if (css == null) { var css = "dark" };
+          localStorage.setItem("css", css);
+
+          var currentCSS = document.getElementsByTagName("link").item(3);
+
+          var newCSS = document.createElement("link");
+          newCSS.setAttribute("rel", "stylesheet");
+          newCSS.setAttribute("type", "text/css");
+          newCSS.setAttribute("href", "css/" + css + ".css");
+
+          document.getElementsByTagName("head").item(0).replaceChild(newCSS, currentCSS);
+
+          if (css == "dark") {
+            document.getElementById("dark").selected = true;
+          } else {
+            document.getElementById("light").selected = true;
+          }
+        }
+      </script>
 
       <div id="container">
         <?php
@@ -273,7 +307,7 @@
                       echo "<tr><td align='left'>Depart: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($outboundDepart)) . "</td></tr>";
                       echo "<tr><td align='left'>Arrival: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($outboundArrival)) . "</td></tr>";
                       echo "<tr><td align='left'>Flight #: </td><td align='right' colspan='2'>" . $outboundFlightNumber . "</td></tr>";
-                      echo "<tr><td align='left'>Class: </td><td align='right' colspan='2'>" . $outboundTravelClass . "</td></tr>";
+                      echo "<tr><td align='left'>Class: </td><td align='right' colspan='2'>" . ucfirst(strtolower($outboundTravelClass)) . "</td></tr>";
                       echo "<tr><td align='left'>Availability: </td><td align='right' colspan='2'>" . $outboundSeatsRemaining . "</td></tr>";
                       echo "</table>";
                     }
@@ -354,7 +388,7 @@
                         echo "<tr><td align='left'>Depart: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($inboundDepart)) . "</td></tr>";
                         echo "<tr><td align='left'>Arrival: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($inboundArrival)) . "</td></tr>";
                         echo "<tr><td align='left'>Flight #: </td><td align='right' colspan='2'>" . $inboundFlightNumber . "</td></tr>";
-                        echo "<tr><td align='left'>Class: </td><td align='right' colspan='2'>" . $inboundTravelClass . "</td></tr>";
+                        echo "<tr><td align='left'>Class: </td><td align='right' colspan='2'>" . ucfirst(strtolower($inboundTravelClass)) . "</td></tr>";
                         echo "<tr><td align='left'>Availability: </td><td align='right' colspan='2'>" . $inboundSeatsRemaining . "</td></tr>";
                         echo "</table>";
                       }

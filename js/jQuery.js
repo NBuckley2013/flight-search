@@ -24,7 +24,9 @@ $(function() {
 $(function() {
   $("#loading").css("visibility", "hidden")
   $("#search").closest("form").submit(function() {
+    $("#search").fadeOut()
     $(".flights_container").fadeOut()
+    $("#notice").fadeOut()
     $("#error").fadeOut()
     $("#loading").css("visibility", "visible").hide().fadeIn()
   })

@@ -1,11 +1,13 @@
-* {
+*:not(code) {
 	font-family: "Fira Sans";
 	margin: 0;
 }
 
+#notice {
+	text-align: center;
+}
+
 html, body {
-	background-color: #282c34;
-	color: #FFFFFF;
 	height: 100%;
 }
 
@@ -20,22 +22,22 @@ html, body {
 }
 
 #footer, #wrapper:after {
-	height: 32px;
+	height: 27px;
 }
 
 #footer {
-	background-color:rgba(0,0,0,0.5);
 	text-align: center;
-	padding-top: 5px;
+	padding-top: 10px;
+	font-size: 14px;
 }
 
 #header {
 	height: 32px;
-	background-color:rgba(0,0,0,0.5);
 }
 
 #header #select {
-	padding-top: 2px;
+	font-size: 12px;
+	height: 16px;
 	color: #FFFFFF;
 	background-color: rgba(0,0,0,0);
 	border: none;
@@ -67,14 +69,20 @@ html, body {
 
 #container {
 	margin: 0 auto;
-	display: table;
 	max-width: 900px;
+}
+
+@media screen and (max-width: 900px) {
+  #container {
+    margin-left: 10%;
+		margin-right: 10%;
+		margin-bottom: 10%;
+  }
 }
 
 #about_image {
 	margin-top: 50px;
 	background-position: center;
-	box-shadow: 0px 0px 75px #000000;
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: cover;
@@ -83,7 +91,6 @@ html, body {
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	text-align: center;
-	max-width: 900px;
 }
 
 #about {
@@ -101,15 +108,10 @@ a {
 	text-decoration: none;
 }
 
-#about a:hover, #footer a:hover, #search:hover {
-	color: #99FFFF;
-}
-
 #navigation {
 	padding: 50px;
 	text-align: center;
 	background-position: center;
-	box-shadow: 0px 0px 75px #000000;
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: cover;
@@ -121,46 +123,80 @@ a {
 	min-width: 800px;
 }
 
+@media screen and (max-width: 900px) {
+  #navigation {
+    min-width: 0;
+  }
+}
+
 #navigation input {
 	color: #FFFFFF;
-	background-color: rgba(0,0,0,0.5);
+	background-color: rgba(0,0,0,0.7);
 	border: none;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	min-height: 30px;
-	min-width: 178px;
 	text-align: center;
 	cursor: text;
+	vertical-align: middle;
 }
 
 #navigation input[type=radio] {
 	cursor: pointer;
-	min-width: 0;
-	min-height: 0;
+	margin-left: 10px;
+	margin-right: 2px;
 }
 
 #navigation input[type=checkbox] {
 	cursor: pointer;
-	min-width: 0;
-	min-height: 0;
+	margin-right: 2px;
 }
 
 #navigation_options {
 	margin: 0 auto;
-	padding: 5px;
+	min-height: 32px;
+	padding-left: 5px;
+	padding-right: 5px;
 	width: 250px;
-	background-color: rgba(0,0,0,0.5);
+	background-color: rgba(0,0,0,0.7);
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
+	font-size: 14px;
 }
 
 #navigation #search {
 	min-width: 0;
 	cursor: pointer;
+}
+
+@media screen and (max-width: 900px) {
+	#navigation input[type=text] {
+		min-width: auto;
+		margin-bottom: 10px;
+	}
+	#navigation #search {
+		display: table;
+		margin: 0 auto;
+	}
+}
+
+@media screen and (max-width: 690px) {
+	#navigation input[type=text] {
+		width: 260px;
+	}
+}
+
+@media screen and (max-width: 448px) {
+	#navigation_options {
+    width: auto;
+  }
+	#navigation input[type=text] {
+		width: 100%;
+	}
 }
 
 .inspiration_search .ui-datepicker-calendar {
@@ -169,7 +205,6 @@ a {
 
 .flights_container {
 	margin-bottom: 50px;
-	box-shadow: 0px 0px 75px #000000;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	border-bottom-left-radius: 5px;
@@ -179,10 +214,6 @@ a {
 
 .flights_container:hover {
 	transform: scale(1.05);
-}
-
-.flights_container:hover > div:not(.flights) {
-	color: #99FFFF;
 }
 
 .flights {
@@ -195,7 +226,7 @@ a {
 	margin-left: 32px;
 	margin-right: 32px;
 	margin-bottom: 32px;
-	background-color: rgba(0,0,0,0.5);
+	background-color: rgba(0,0,0,0.7);
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	border-bottom-left-radius: 5px;
@@ -218,7 +249,7 @@ a {
 }
 
 .route {
-	background-color: rgba(0,0,0,0.5);
+	background-color: rgba(0,0,0,0.7);
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	padding: 5px;
@@ -226,7 +257,7 @@ a {
 }
 
 .price {
-	background-color: rgba(0,0,0,0.5);
+	background-color: rgba(0,0,0,0.7);
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	padding: 5px;
@@ -240,7 +271,6 @@ a {
 
 #error {
 	text-align: center;
-	background-color: rgba(0,0,0,0.5);
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	border-bottom-left-radius: 5px;
@@ -250,7 +280,6 @@ a {
 
 /* Spinner 1 */
 .lds-spinner {
-  color: official;
   display: inline-block;
   position: relative;
   width: 64px;
@@ -269,7 +298,6 @@ a {
   width: 5px;
   height: 14px;
   border-radius: 20%;
-  background: #fff;
 }
 .lds-spinner div:nth-child(1) {
   transform: rotate(0deg);

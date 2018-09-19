@@ -1,0 +1,40 @@
+body {
+  color: #FFFFFF;
+  background-color: #282C34;
+}
+
+#footer {
+  background-color:rgba(0,0,0,0.5);
+}
+
+#header {
+	background-color:rgba(0,0,0,0.5);
+}
+
+#about_image {
+	box-shadow: 0px 0px 75px #000000;
+}
+
+#about a:hover, #footer a:hover, #search:hover {
+	color: #99FFFF;
+}
+
+#navigation {
+  box-shadow: 0px 0px 75px #000000;
+}
+
+.flights_container {
+	box-shadow: 0px 0px 75px #000000;
+}
+
+.flights_container:hover > div:not(.flights) {
+	color: #99FFFF;
+}
+
+#error {
+	background-color: rgba(0,0,0,0.5);
+}
+
+.lds-spinner div:after {
+  background: #FFF;
+}

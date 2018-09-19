@@ -20,7 +20,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="icon" href="/img/favicon.png">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="js/jQuery.js" type="text/javascript"></script>
@@ -28,8 +27,10 @@
     <title>About</title>
     <link rel="stylesheet" href="https://code.cdn.mozilla.net/fonts/fira.css">
     <link rel="stylesheet" type="text/css" href="css/styling.css"/>
+    <link rel="stylesheet" type="text/css" href="css/dark.css"/>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <meta name="viewport" content="width=device-width, initial-scale=0.7">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#282C34">
   </head>
 
   <body>
@@ -39,6 +40,11 @@
         <link rel="icon" href="favicon.ico" />
         <link rel="shortcut icon" href="favicon.ico" />
         <div id="header_text">
+          <select id="select" onchange="changeTheme(this.value)">
+            <option id="dark" value="dark">Dark</option>
+            <option id="light" value="light">Light</option>
+          </select>
+
           <select id="select" onchange="location = this.value;">
             <option value="">About</option>
             <option value="inspiration_search.php">Inspiration Search</option>
@@ -46,6 +52,33 @@
           </select>
         </div>
       </div>
+
+      <!-- Change Theme -->
+      <script type="text/javascript">
+        if (localStorage.getItem('css')) {
+          changeTheme(localStorage.getItem('css'));
+        }
+
+        function changeTheme(css) {
+          if (css == null) { var css = "dark" };
+          localStorage.setItem("css", css);
+
+          var currentCSS = document.getElementsByTagName("link").item(3);
+
+          var newCSS = document.createElement("link");
+          newCSS.setAttribute("rel", "stylesheet");
+          newCSS.setAttribute("type", "text/css");
+          newCSS.setAttribute("href", "css/" + css + ".css");
+
+          document.getElementsByTagName("head").item(0).replaceChild(newCSS, currentCSS);
+
+          if (css == "dark") {
+            document.getElementById("dark").selected = true;
+          } else {
+            document.getElementById("light").selected = true;
+          }
+        }
+      </script>
 
       <div id="container">
         <?php

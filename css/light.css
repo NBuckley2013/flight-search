@@ -1,0 +1,32 @@
+body {
+  color: #FFFFFF;
+  background-color: #FFFFFF;
+}
+
+code {
+  color: #000000;
+}
+
+#footer {
+  background-color:rgba(0,0,0,0.8);
+}
+
+#header {
+	background-color:rgba(0,0,0,0.8);
+}
+
+#about a:hover, #footer a:hover, #search:hover {
+	color: #00B7EB;
+}
+
+.flights_container:hover > div:not(.flights) {
+	color: #00B7EB;
+}
+
+#error {
+	background-color: rgba(0,0,0,0.8);
+}
+
+.lds-spinner div:after {
+  background: #000;
+}
