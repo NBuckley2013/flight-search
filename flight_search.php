@@ -172,174 +172,95 @@
 
         <?php
           if (isset($_POST["search"])) {
-
-            if ($oneWay == "true") {
-              $flights = json_decode($amadeus->cURL($amadeus->getLowFareFlightsOneWay($origin, $destination, $departDate, $_SESSION["currency"], $direct), "GET"), true);
+            if ($departDate > $returnDate) {
+              echo "<div id='error'>Return date must be greater than departure date</div>";
             } else {
-              $flights = json_decode($amadeus->cURL($amadeus->getLowFareFlights($origin, $destination, $departDate, $returnDate, $_SESSION["currency"], $direct), "GET"), true);
-            }
+              if ($oneWay == "true") {
+                $flights = json_decode($amadeus->cURL($amadeus->getLowFareFlightsOneWay($origin, $destination, $departDate, $_SESSION["currency"], $direct), "GET"), true);
+              } else {
+                $flights = json_decode($amadeus->cURL($amadeus->getLowFareFlights($origin, $destination, $departDate, $returnDate, $_SESSION["currency"], $direct), "GET"), true);
+              }
 
-            if (array_key_exists("results", $flights)) {
-              $i = 0;
-              foreach ($flights["results"] as $results) {
-                $price = $results["fare"]["total_price"];
-                foreach ($results["itineraries"] as $itineraries) {
+              if (array_key_exists("results", $flights)) {
+                $i = 0;
+                foreach ($flights["results"] as $results) {
+                  $price = $results["fare"]["total_price"];
+                  foreach ($results["itineraries"] as $itineraries) {
 
-                  $originAirport = current($itineraries["outbound"]["flights"]);
-                  $originAirportCode = $originAirport["origin"]["airport"];
-                  $destinationAirport = end($itineraries["outbound"]["flights"]);
-                  $destinationAirportCode = $destinationAirport["destination"]["airport"];
+                    $originAirport = current($itineraries["outbound"]["flights"]);
+                    $originAirportCode = $originAirport["origin"]["airport"];
+                    $destinationAirport = end($itineraries["outbound"]["flights"]);
+                    $destinationAirportCode = $destinationAirport["destination"]["airport"];
 
-                  // get airport image
-                  foreach ($airportImageDir as $file) {
-                    if (substr($file->getFilename(), 0, 3) == strtolower($destinationAirportCode)) {
-                      $destinationAirportImage = $airportImageDir->getPath() . $file;
+                    // get airport image
+                    foreach ($airportImageDir as $file) {
+                      if (substr($file->getFilename(), 0, 3) == strtolower($destinationAirportCode)) {
+                        $destinationAirportImage = $airportImageDir->getPath() . $file;
+                      }
                     }
-                  }
 
-                  // get city name
-                  $originCity = json_decode($amadeus->cURL($amadeus->getCity($origin), "GET"), true);
-                  $destinationCity = json_decode($amadeus->cURL($amadeus->getCity($destination), "GET"), true);
+                    // get city name
+                    $originCity = json_decode($amadeus->cURL($amadeus->getCity($origin), "GET"), true);
+                    $destinationCity = json_decode($amadeus->cURL($amadeus->getCity($destination), "GET"), true);
 
-                  if (array_key_exists("city", $originCity)) {
-                    $originName = $originCity["city"]["name"];
-                  } elseif (array_key_exists("airports", $originCity)) {
-                      foreach ($originCity["airports"] as $airport) {
-                        if ($airport["code"] == $origin) {
-                          $originName = $airport["city_name"];
-                        }
-                      }
-                  } else {
-                      $originName = $origin;
-                  }
-                  if (array_key_exists("city", $destinationCity)) {
-                    $destinationName = $destinationCity["city"]["name"];
-                  } elseif (array_key_exists("airports", $destinationCity)) {
-                      foreach ($destinationCity["airports"] as $airport) {
-                        if ($airport["code"] == $destination) {
-                          $destinationName = $airport["city_name"];
-                        }
-                      }
-                  } else {
-                      $destinationName = $destination;
-                  }
-
-                  if ($oneWay == "false") {
-                    $arrow = " ⇄ ";
-                  } else {
-                    $arrow = " → ";
-                  }
-
-                  echo "<div class='flights_container' style='background-image: url(" . $destinationAirportImage . "); background-repeat: no-repeat; background-size: cover; background-position: center'>";
-                  echo "<div class='route'>" . $originName . $arrow . $destinationName . "</div><div class='flights'>";
-                  foreach ($itineraries["outbound"] as $outbound) {
-                    foreach ($outbound as $flight) {
-                      $outboundDepart = $flight["departs_at"];
-                      $outboundArrival = $flight["arrives_at"];
-                      $outboundOriginAirport = $flight["origin"]["airport"];
-                      if (array_key_exists("terminal", $flight["origin"])) {
-                        $outboundOriginTerminal = $flight["origin"]["terminal"];
-                      }
-                      $outboundDestinationAirport = $flight["destination"]["airport"];
-                      if (array_key_exists("terminal", $flight["destination"])) {
-                        $outboundDestinationTerminal = $flight["destination"]["terminal"];
-                      }
-                      $outboundMarketingAirline = $flight["marketing_airline"];
-                      $outboundOperatingAirline = $flight["operating_airline"];
-                      $outboundFlightNumber = $flight["flight_number"];
-                      $outboundAircraft = $flight["aircraft"];
-                      $outboundTravelClass = $flight["booking_info"]["travel_class"];
-                      $outboundBookingCode = $flight["booking_info"]["booking_code"];
-                      $outboundSeatsRemaining = $flight["booking_info"]["seats_remaining"];
-
-                      // get airport name
-                      $originAirport = json_decode($amadeus->cURL($amadeus->getCity($outboundOriginAirport), "GET"), true);
-                      $destinationAirport = json_decode($amadeus->cURL($amadeus->getCity($outboundDestinationAirport), "GET"), true);
-
-                      if (array_key_exists("airports", $originAirport)) {
-                        foreach ($originAirport["airports"] as $airport) {
-                          if ($airport["code"] == $outboundOriginAirport) {
-                            $originAirportName = $airport["name"];
+                    if (array_key_exists("city", $originCity)) {
+                      $originName = $originCity["city"]["name"];
+                    } elseif (array_key_exists("airports", $originCity)) {
+                        foreach ($originCity["airports"] as $airport) {
+                          if ($airport["code"] == $origin) {
+                            $originName = $airport["city_name"];
                           }
                         }
-                      } else {
-                        $originAirportName = "";
-                      }
-
-                      if (array_key_exists("airports", $destinationAirport)) {
-                        foreach ($destinationAirport["airports"] as $airport) {
-                          if ($airport["code"] == $outboundDestinationAirport) {
-                            $destinationAirportName = $airport["name"];
-                          }
-                        }
-                      } else {
-                        $destinationAirportName = "";
-                      }
-
-                      // get airline logos
-                      foreach ($airlineLogoDir as $logo) {
-                        if ($logo->getFilename() == $outboundOperatingAirline . ".png") {
-                          $airlineLogo = $airlineLogoDir->getPath() . $logo->getFilename();
-                        } elseif (!$logo->getFilename() == $outboundOperatingAirline . ".png") {
-                          $airlineLogo = "";
-                        }
-                      }
-
-                      // get airline names
-                      $airlineInfo = json_decode($sabre->cURL($sabre->getAirline($outboundOperatingAirline), "GET"), true);
-                      if (array_key_exists("AirlineInfo", $airlineInfo)) {
-                        foreach ($airlineInfo["AirlineInfo"] as $name) {
-                          if ($name["AlternativeBusinessName"] > $name["AirlineName"]) {
-                            $airlineName = $name["AlternativeBusinessName"];
-                          } else {
-                          $airlineName = $name["AirlineName"];
-                          }
-                        }
-                      } else {
-                        $airlineName = $outboundOperatingAirline;
-                      }
-
-                      echo "<table class='flight_details'><tr><td colspan='2' style='padding-right: 10px'>";
-                      echo '<span class="airport_name" title="' . $originAirportName . '">' . $outboundOriginAirport . '</span> → ' . '<span class="airport_name" title="' . $destinationAirportName . '">' . $outboundDestinationAirport . '</span></td>';
-                      echo '<td align="right"><span title="' . $airlineName . '"><img class="airline_logo" src="' . $airlineLogo . '" width="128" height="37"/></span></td></tr>';
-                      echo "<tr></tr><tr></tr><tr></tr><tr></tr><tr></tr>";
-                      echo "<tr><td align='left'>Date: </td><td align='right' colspan='2'>" . date("l jS F", strtotime($outboundDepart)) . "</td></tr>";
-                      echo "<tr><td align='left'>Depart: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($outboundDepart)) . "</td></tr>";
-                      echo "<tr><td align='left'>Arrival: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($outboundArrival)) . "</td></tr>";
-                      echo "<tr><td align='left'>Flight #: </td><td align='right' colspan='2'>" . $outboundFlightNumber . "</td></tr>";
-                      echo "<tr><td align='left'>Class: </td><td align='right' colspan='2'>" . ucfirst(strtolower($outboundTravelClass)) . "</td></tr>";
-                      echo "<tr><td align='left'>Availability: </td><td align='right' colspan='2'>" . $outboundSeatsRemaining . "</td></tr>";
-                      echo "</table>";
+                    } else {
+                        $originName = $origin;
                     }
-                  }
-                  if (array_key_exists("inbound", $itineraries)) {
-                      foreach ($itineraries["inbound"] as $inbound) {
-                      foreach ($inbound as $flight) {
-                        $inboundDepart = $flight["departs_at"];
-                        $inboundArrival = $flight["arrives_at"];
-                        $inboundOriginAirport = $flight["origin"]["airport"];
+                    if (array_key_exists("city", $destinationCity)) {
+                      $destinationName = $destinationCity["city"]["name"];
+                    } elseif (array_key_exists("airports", $destinationCity)) {
+                        foreach ($destinationCity["airports"] as $airport) {
+                          if ($airport["code"] == $destination) {
+                            $destinationName = $airport["city_name"];
+                          }
+                        }
+                    } else {
+                        $destinationName = $destination;
+                    }
+
+                    if ($oneWay == "false") {
+                      $arrow = " ⇄ ";
+                    } else {
+                      $arrow = " → ";
+                    }
+
+                    echo "<div class='flights_container' style='background-image: url(" . $destinationAirportImage . "); background-repeat: no-repeat; background-size: cover; background-position: center'>";
+                    echo "<div class='route'>" . $originName . $arrow . $destinationName . "</div><div class='flights'>";
+                    foreach ($itineraries["outbound"] as $outbound) {
+                      foreach ($outbound as $flight) {
+                        $outboundDepart = $flight["departs_at"];
+                        $outboundArrival = $flight["arrives_at"];
+                        $outboundOriginAirport = $flight["origin"]["airport"];
                         if (array_key_exists("terminal", $flight["origin"])) {
-                          $inboundOriginTerminal = $flight["origin"]["terminal"];
+                          $outboundOriginTerminal = $flight["origin"]["terminal"];
                         }
-                        $inboundDestinationAirport = $flight["destination"]["airport"];
+                        $outboundDestinationAirport = $flight["destination"]["airport"];
                         if (array_key_exists("terminal", $flight["destination"])) {
-                          $inboundDestinationTerminal = $flight["destination"]["terminal"];
+                          $outboundDestinationTerminal = $flight["destination"]["terminal"];
                         }
-                        $inboundMarketingAirline = $flight["marketing_airline"];
-                        $inboundOperatingAirline = $flight["operating_airline"];
-                        $inboundFlightNumber = $flight["flight_number"];
-                        $inboundAircraft = $flight["aircraft"];
-                        $inboundTravelClass = $flight["booking_info"]["travel_class"];
-                        $inboundBookingCode = $flight["booking_info"]["booking_code"];
-                        $inboundSeatsRemaining = $flight["booking_info"]["seats_remaining"];
+                        $outboundMarketingAirline = $flight["marketing_airline"];
+                        $outboundOperatingAirline = $flight["operating_airline"];
+                        $outboundFlightNumber = $flight["flight_number"];
+                        $outboundAircraft = $flight["aircraft"];
+                        $outboundTravelClass = $flight["booking_info"]["travel_class"];
+                        $outboundBookingCode = $flight["booking_info"]["booking_code"];
+                        $outboundSeatsRemaining = $flight["booking_info"]["seats_remaining"];
 
                         // get airport name
-                        $originAirport = json_decode($amadeus->cURL($amadeus->getCity($inboundOriginAirport), "GET"), true);
-                        $destinationAirport = json_decode($amadeus->cURL($amadeus->getCity($inboundDestinationAirport), "GET"), true);
+                        $originAirport = json_decode($amadeus->cURL($amadeus->getCity($outboundOriginAirport), "GET"), true);
+                        $destinationAirport = json_decode($amadeus->cURL($amadeus->getCity($outboundDestinationAirport), "GET"), true);
 
                         if (array_key_exists("airports", $originAirport)) {
                           foreach ($originAirport["airports"] as $airport) {
-                            if ($airport["code"] == $inboundOriginAirport) {
+                            if ($airport["code"] == $outboundOriginAirport) {
                               $originAirportName = $airport["name"];
                             }
                           }
@@ -349,7 +270,7 @@
 
                         if (array_key_exists("airports", $destinationAirport)) {
                           foreach ($destinationAirport["airports"] as $airport) {
-                            if ($airport["code"] == $inboundDestinationAirport) {
+                            if ($airport["code"] == $outboundDestinationAirport) {
                               $destinationAirportName = $airport["name"];
                             }
                           }
@@ -359,15 +280,15 @@
 
                         // get airline logos
                         foreach ($airlineLogoDir as $logo) {
-                          if ($logo->getFilename() == $inboundOperatingAirline . ".png") {
+                          if ($logo->getFilename() == $outboundOperatingAirline . ".png") {
                             $airlineLogo = $airlineLogoDir->getPath() . $logo->getFilename();
-                          } elseif (!$logo->getFilename() == $inboundOperatingAirline . ".png") {
+                          } elseif (!$logo->getFilename() == $outboundOperatingAirline . ".png") {
                             $airlineLogo = "";
                           }
                         }
 
                         // get airline names
-                        $airlineInfo = json_decode($sabre->cURL($sabre->getAirline($inboundOperatingAirline), "GET"), true);
+                        $airlineInfo = json_decode($sabre->cURL($sabre->getAirline($outboundOperatingAirline), "GET"), true);
                         if (array_key_exists("AirlineInfo", $airlineInfo)) {
                           foreach ($airlineInfo["AirlineInfo"] as $name) {
                             if ($name["AlternativeBusinessName"] > $name["AirlineName"]) {
@@ -377,43 +298,125 @@
                             }
                           }
                         } else {
-                          $airlineName = $inboundOperatingAirline;
+                          $airlineName = $outboundOperatingAirline;
                         }
 
                         echo "<table class='flight_details'><tr><td colspan='2' style='padding-right: 10px'>";
-                        echo '<span class="airport_name" title="' . $originAirportName . '">' . $inboundOriginAirport . '</span> → ' . '<span class="airport_name" title="' . $destinationAirportName . '">' . $inboundDestinationAirport . '</span></td>';
+                        echo '<span class="airport_name" title="' . $originAirportName . '">' . $outboundOriginAirport . '</span> → ' . '<span class="airport_name" title="' . $destinationAirportName . '">' . $outboundDestinationAirport . '</span></td>';
                         echo '<td align="right"><span title="' . $airlineName . '"><img class="airline_logo" src="' . $airlineLogo . '" width="128" height="37"/></span></td></tr>';
                         echo "<tr></tr><tr></tr><tr></tr><tr></tr><tr></tr>";
-                        echo "<tr><td align='left'>Date: </td><td align='right' colspan='2'>" . date("l jS F", strtotime($inboundDepart)) . "</td></tr>";
-                        echo "<tr><td align='left'>Depart: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($inboundDepart)) . "</td></tr>";
-                        echo "<tr><td align='left'>Arrival: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($inboundArrival)) . "</td></tr>";
-                        echo "<tr><td align='left'>Flight #: </td><td align='right' colspan='2'>" . $inboundFlightNumber . "</td></tr>";
-                        echo "<tr><td align='left'>Class: </td><td align='right' colspan='2'>" . ucfirst(strtolower($inboundTravelClass)) . "</td></tr>";
-                        echo "<tr><td align='left'>Availability: </td><td align='right' colspan='2'>" . $inboundSeatsRemaining . "</td></tr>";
+                        echo "<tr><td align='left'>Date: </td><td align='right' colspan='2'>" . date("l jS F", strtotime($outboundDepart)) . "</td></tr>";
+                        echo "<tr><td align='left'>Depart: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($outboundDepart)) . "</td></tr>";
+                        echo "<tr><td align='left'>Arrival: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($outboundArrival)) . "</td></tr>";
+                        echo "<tr><td align='left'>Flight #: </td><td align='right' colspan='2'>" . $outboundFlightNumber . "</td></tr>";
+                        echo "<tr><td align='left'>Class: </td><td align='right' colspan='2'>" . ucfirst(strtolower($outboundTravelClass)) . "</td></tr>";
+                        echo "<tr><td align='left'>Availability: </td><td align='right' colspan='2'>" . $outboundSeatsRemaining . "</td></tr>";
                         echo "</table>";
                       }
                     }
-                  }
-                  if ($_SESSION["currency"] == "GBP") {
-                    $currency = "£";
-                  }
-                  if ($_SESSION["currency"] == "EUR") {
-                    $currency = "€";
-                  }
-                  if ($_SESSION["currency"] == "USD") {
-                    $currency = "$";
-                  }
-                  echo "</div><div class='price'>" . $currency . $price . "</div></div><br>";
-                }
+                    if (array_key_exists("inbound", $itineraries)) {
+                        foreach ($itineraries["inbound"] as $inbound) {
+                        foreach ($inbound as $flight) {
+                          $inboundDepart = $flight["departs_at"];
+                          $inboundArrival = $flight["arrives_at"];
+                          $inboundOriginAirport = $flight["origin"]["airport"];
+                          if (array_key_exists("terminal", $flight["origin"])) {
+                            $inboundOriginTerminal = $flight["origin"]["terminal"];
+                          }
+                          $inboundDestinationAirport = $flight["destination"]["airport"];
+                          if (array_key_exists("terminal", $flight["destination"])) {
+                            $inboundDestinationTerminal = $flight["destination"]["terminal"];
+                          }
+                          $inboundMarketingAirline = $flight["marketing_airline"];
+                          $inboundOperatingAirline = $flight["operating_airline"];
+                          $inboundFlightNumber = $flight["flight_number"];
+                          $inboundAircraft = $flight["aircraft"];
+                          $inboundTravelClass = $flight["booking_info"]["travel_class"];
+                          $inboundBookingCode = $flight["booking_info"]["booking_code"];
+                          $inboundSeatsRemaining = $flight["booking_info"]["seats_remaining"];
 
-                // break after 5th result
-                $i++;
-                if ($i == 5) {
-                  break;
+                          // get airport name
+                          $originAirport = json_decode($amadeus->cURL($amadeus->getCity($inboundOriginAirport), "GET"), true);
+                          $destinationAirport = json_decode($amadeus->cURL($amadeus->getCity($inboundDestinationAirport), "GET"), true);
+
+                          if (array_key_exists("airports", $originAirport)) {
+                            foreach ($originAirport["airports"] as $airport) {
+                              if ($airport["code"] == $inboundOriginAirport) {
+                                $originAirportName = $airport["name"];
+                              }
+                            }
+                          } else {
+                            $originAirportName = "";
+                          }
+
+                          if (array_key_exists("airports", $destinationAirport)) {
+                            foreach ($destinationAirport["airports"] as $airport) {
+                              if ($airport["code"] == $inboundDestinationAirport) {
+                                $destinationAirportName = $airport["name"];
+                              }
+                            }
+                          } else {
+                            $destinationAirportName = "";
+                          }
+
+                          // get airline logos
+                          foreach ($airlineLogoDir as $logo) {
+                            if ($logo->getFilename() == $inboundOperatingAirline . ".png") {
+                              $airlineLogo = $airlineLogoDir->getPath() . $logo->getFilename();
+                            } elseif (!$logo->getFilename() == $inboundOperatingAirline . ".png") {
+                              $airlineLogo = "";
+                            }
+                          }
+
+                          // get airline names
+                          $airlineInfo = json_decode($sabre->cURL($sabre->getAirline($inboundOperatingAirline), "GET"), true);
+                          if (array_key_exists("AirlineInfo", $airlineInfo)) {
+                            foreach ($airlineInfo["AirlineInfo"] as $name) {
+                              if ($name["AlternativeBusinessName"] > $name["AirlineName"]) {
+                                $airlineName = $name["AlternativeBusinessName"];
+                              } else {
+                              $airlineName = $name["AirlineName"];
+                              }
+                            }
+                          } else {
+                            $airlineName = $inboundOperatingAirline;
+                          }
+
+                          echo "<table class='flight_details'><tr><td colspan='2' style='padding-right: 10px'>";
+                          echo '<span class="airport_name" title="' . $originAirportName . '">' . $inboundOriginAirport . '</span> → ' . '<span class="airport_name" title="' . $destinationAirportName . '">' . $inboundDestinationAirport . '</span></td>';
+                          echo '<td align="right"><span title="' . $airlineName . '"><img class="airline_logo" src="' . $airlineLogo . '" width="128" height="37"/></span></td></tr>';
+                          echo "<tr></tr><tr></tr><tr></tr><tr></tr><tr></tr>";
+                          echo "<tr><td align='left'>Date: </td><td align='right' colspan='2'>" . date("l jS F", strtotime($inboundDepart)) . "</td></tr>";
+                          echo "<tr><td align='left'>Depart: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($inboundDepart)) . "</td></tr>";
+                          echo "<tr><td align='left'>Arrival: </td><td align='right' colspan='2'>" . date("g:ia", strtotime($inboundArrival)) . "</td></tr>";
+                          echo "<tr><td align='left'>Flight #: </td><td align='right' colspan='2'>" . $inboundFlightNumber . "</td></tr>";
+                          echo "<tr><td align='left'>Class: </td><td align='right' colspan='2'>" . ucfirst(strtolower($inboundTravelClass)) . "</td></tr>";
+                          echo "<tr><td align='left'>Availability: </td><td align='right' colspan='2'>" . $inboundSeatsRemaining . "</td></tr>";
+                          echo "</table>";
+                        }
+                      }
+                    }
+                    if ($_SESSION["currency"] == "GBP") {
+                      $currency = "£";
+                    }
+                    if ($_SESSION["currency"] == "EUR") {
+                      $currency = "€";
+                    }
+                    if ($_SESSION["currency"] == "USD") {
+                      $currency = "$";
+                    }
+                    echo "</div><div class='price'>" . $currency . $price . "</div></div><br>";
+                  }
+
+                  // break after 5th result
+                  $i++;
+                  if ($i == 5) {
+                    break;
+                  }
                 }
+              } else {
+                echo "<div id='error'>No flights found</div>";
               }
-            } else {
-              echo "<div id='error'>No flights found</div>";
             }
           }
         ?>
