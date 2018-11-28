@@ -172,7 +172,9 @@
 
         <?php
           if (isset($_POST["search"])) {
-            if ($departDate > $returnDate) {
+            if ($oneWay == "false" && empty($returnDate)) {
+              echo "<div id='error'>Please select a return date</div>";
+            } elseif ($oneWay == "false" && $departDate > $returnDate) {
               echo "<div id='error'>Return date must be greater than departure date</div>";
             } else {
               if ($oneWay == "true") {
